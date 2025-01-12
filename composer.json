@@ -1,0 +1,19 @@
+{
+    "name": "zaherg/litepress-composer-commands",
+    "description": "Composer commands for Litepress project setup and management",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Composer\\Litepress\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^8.1",
+        "symfony/console": "^7.0",
+        "symfony/process": "^7.2",
+        "symfony/yaml": "^7.2",
+        "composer/composer": "^2.0"
+    },
+    "minimum-stability": "stable"
+}
