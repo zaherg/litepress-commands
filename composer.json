@@ -14,7 +14,12 @@
         "symfony/process": "^7.2",
         "symfony/yaml": "^7.2",
         "composer/composer": "^2.0",
-        "vlucas/phpdotenv": "^5.6"
+        "vlucas/phpdotenv": "^5.6",
+        "friendsofphp/php-cs-fixer": "^3.49"
+    },
+    "scripts": {
+        "format": "php-cs-fixer fix --config=.php-cs-fixer.php",
+        "format:dry-run": "php-cs-fixer fix --config=.php-cs-fixer.php --dry-run --diff"
     },
     "minimum-stability": "stable"
 }

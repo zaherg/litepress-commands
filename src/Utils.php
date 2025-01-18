@@ -19,7 +19,7 @@ class Utils
 
     public static function loadEvn(Event $event): void
     {
-        if(file_exists(self::getBaseDir($event) . '/.env')) {
+        if (file_exists(self::getBaseDir($event) . '/.env')) {
             \Dotenv\Dotenv::createMutable(self::getBaseDir($event))->load();
         }
     }

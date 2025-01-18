@@ -2,6 +2,12 @@
 
 namespace Composer\Litepress;
 
+use Composer\Litepress\Commands\Cleanup;
+use Composer\Litepress\Commands\CreateProject;
+use Composer\Litepress\Commands\Database;
+use Composer\Litepress\Commands\GenerateWPCliConfig;
+use Composer\Litepress\Commands\InstallTheme;
+use Composer\Litepress\Commands\InstallWordPress;
 use Composer\Script\Event;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -25,7 +31,7 @@ class ScriptHandler
     {
         try {
             $app = self::getApplication();
-            $app->add(new HandleCreateProjectCommand);
+            $app->add(new CreateProject());
             $app->run(new ArrayInput(['command' => 'project:setup']), new ConsoleOutput());
         } catch (\Exception $e) {
             $event->getIO()->writeError($e->getMessage());
@@ -36,7 +42,7 @@ class ScriptHandler
     {
         try {
             $app = self::getApplication();
-            $app->add(new HandleCleanupCommand($event));
+            $app->add(new Cleanup($event));
             $app->run(new ArrayInput(['command' => 'project:cleanup']), new ConsoleOutput());
         } catch (\Exception $e) {
             $event->getIO()->writeError($e->getMessage());
@@ -47,7 +53,7 @@ class ScriptHandler
     {
         try {
             $app = self::getApplication();
-            $app->add(new HandleDatabaseCommand($event));
+            $app->add(new Database($event));
             $app->run(new ArrayInput(['command' => 'project:database']), new ConsoleOutput());
         } catch (\Exception $e) {
             $event->getIO()->writeError($e->getMessage());
@@ -58,7 +64,7 @@ class ScriptHandler
     {
         try {
             $app = self::getApplication();
-            $app->add(new HandleWordPressInstallationCommand($event));
+            $app->add(new InstallWordPress($event));
             $app->run(new ArrayInput(['command' => 'project:install']), new ConsoleOutput());
         } catch (\Exception $e) {
             $event->getIO()->writeError($e->getMessage());
@@ -69,7 +75,7 @@ class ScriptHandler
     {
         try {
             $app = self::getApplication();
-            $app->add(new HandleThemeInstallationCommand($event));
+            $app->add(new InstallTheme($event));
             $app->run(new ArrayInput(['command' => 'project:theme']), new ConsoleOutput());
         } catch (\Exception $e) {
             $event->getIO()->writeError($e->getMessage());
@@ -80,7 +86,7 @@ class ScriptHandler
     {
         try {
             $app = self::getApplication();
-            $app->add(new HandleGeneratingWPCliConfigFileCommand($event));
+            $app->add(new GenerateWPCliConfig($event));
             $app->run(new ArrayInput(['command' => 'project:wpcli']), new ConsoleOutput());
         } catch (\Exception $e) {
             $event->getIO()->writeError($e->getMessage());
@@ -97,6 +103,7 @@ class ScriptHandler
             self::handleGeneratingWPCliConfigFile($event);
         } catch (\Exception $e) {
             $event->getIO()->writeError($e->getMessage());
+
             throw $e;
         }
     }

@@ -1,14 +1,15 @@
 <?php
 
-namespace Composer\Litepress;
+namespace Composer\Litepress\Commands;
 
+use Composer\Litepress\Utils;
 use Composer\Script\Event;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
 
-class HandleGeneratingWPCliConfigFileCommand extends Command
+class GenerateWPCliConfig extends Command
 {
     private array $config = [
         'path' => 'public/wp',
@@ -19,16 +20,16 @@ class HandleGeneratingWPCliConfigFileCommand extends Command
             'dbpass' => '',
             'dbhost' => 'localhost',
             'dbprefix' => 'wp_',
-            'extra-php' => "define( 'DB_FILE', dirname( ABSPATH ) . '/content/database/.ht.sqlite' );\ndefine( 'DB_DIR', dirname( ABSPATH ) . '/content/database/' );"
+            'extra-php' => "define( 'DB_FILE', dirname( ABSPATH ) . '/content/database/.ht.sqlite' );\ndefine( 'DB_DIR', dirname( ABSPATH ) . '/content/database/' );",
         ],
         'disabled_commands' => [
             'db drop',
             'db export',
-            'db import'
+            'db import',
         ],
         'server' => [
-            'docroot' => 'public'
-        ]
+            'docroot' => 'public',
+        ],
     ];
 
     protected Event $event;
@@ -59,6 +60,7 @@ class HandleGeneratingWPCliConfigFileCommand extends Command
             }
 
             $output->writeln('<info>✓ WP-CLI configuration generated</info>');
+
             return Command::SUCCESS;
 
         } catch (\Exception $e) {

@@ -1,42 +1,42 @@
 <?php
 
-namespace Composer\Litepress;
+namespace Composer\Litepress\Commands;
 
 use Composer\Util\Filesystem;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Symfony\Component\Console\Question\Question;
 
-class HandleCreateProjectCommand extends Command
+class CreateProject extends Command
 {
     protected array $requiredInfo = [
         'site-url' => [
             'env' => 'WP_HOME',
             'question' => 'What is your site URL?',
-            'default' => 'http://litepress.test'
+            'default' => 'http://litepress.test',
         ],
         'admin-email' => [
             'env' => 'ADMIN_EMAIL',
             'question' => 'What is the admin email?',
-            'default' => 'admin@example.com'
+            'default' => 'admin@example.com',
         ],
         'site-title' => [
             'env' => 'SITE_TITLE',
             'question' => 'What is your site title?',
-            'default' => 'WordPress'
+            'default' => 'WordPress',
         ],
         'admin-user' => [
             'env' => 'ADMIN_USER',
             'question' => 'What is the admin username?',
-            'default' => 'admin'
+            'default' => 'admin',
         ],
         'admin-password' => [
             'env' => 'ADMIN_PASSWORD',
             'question' => 'What is the admin password?',
-            'default' => 'password'
-        ]
+            'default' => 'password',
+        ],
     ];
 
     protected Filesystem $fs;
@@ -44,7 +44,7 @@ class HandleCreateProjectCommand extends Command
     public function __construct()
     {
         parent::__construct('project:setup');
-        $this->fs = new Filesystem;
+        $this->fs = new Filesystem();
     }
 
     protected function configure(): void
@@ -64,7 +64,7 @@ class HandleCreateProjectCommand extends Command
                 // Check environment variable first
                 $value = getenv($info['env']);
 
-                if (!$value) {
+                if (! $value) {
                     $question = new Question(
                         sprintf('<question>%s</question> [<comment>%s</comment>]: ', $info['question'], $info['default']),
                         $info['default']
@@ -96,13 +96,13 @@ class HandleCreateProjectCommand extends Command
                 false
             );
 
-            if (!$helper->ask($input, $output, $confirmQuestion)) {
+            if (! $helper->ask($input, $output, $confirmQuestion)) {
                 $retryQuestion = new ConfirmationQuestion(
                     '<question>Would you like to update these values? (y/N)</question> ',
                     false
                 );
 
-                if (!$helper->ask($input, $output, $retryQuestion)) {
+                if (! $helper->ask($input, $output, $retryQuestion)) {
                     $output->writeln('<e>Setup cancelled by user. Terminating installation.</e>');
                     exit(1); // Terminate the entire process
                 }
@@ -110,8 +110,10 @@ class HandleCreateProjectCommand extends Command
                 // Clear projectInfo to start over
                 $projectInfo = [];
                 $output->writeln('');
+
                 continue;
             }
+
             break;
         } while (true);
 
@@ -128,7 +130,7 @@ class HandleCreateProjectCommand extends Command
 
     private function updateEnvFile(array $projectInfo, OutputInterface $output): void
     {
-        if (!file_exists('.env.example')) {
+        if (! file_exists('.env.example')) {
             throw new \RuntimeException('.env.example file not found');
         }
 
@@ -143,13 +145,13 @@ class HandleCreateProjectCommand extends Command
             'ADMIN_EMAIL' => $projectInfo['admin-email'],
             'SITE_TITLE' => $projectInfo['site-title'],
             'ADMIN_USER' => $projectInfo['admin-user'],
-            'ADMIN_PASSWORD' => $projectInfo['admin-password']
+            'ADMIN_PASSWORD' => $projectInfo['admin-password'],
         ];
 
         // Generate WordPress salts
         $salts = [
             'AUTH_KEY', 'SECURE_AUTH_KEY', 'LOGGED_IN_KEY', 'NONCE_KEY',
-            'AUTH_SALT', 'SECURE_AUTH_SALT', 'LOGGED_IN_SALT', 'NONCE_SALT'
+            'AUTH_SALT', 'SECURE_AUTH_SALT', 'LOGGED_IN_SALT', 'NONCE_SALT',
         ];
 
         foreach ($salts as $salt) {
@@ -195,11 +197,11 @@ class HandleCreateProjectCommand extends Command
         $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_ []{}<>~`+=,.;:/?|';
         $length = 64;
         $salt = '';
-        
+
         for ($i = 0; $i < $length; $i++) {
             $salt .= $chars[random_int(0, strlen($chars) - 1)];
         }
-        
+
         return $salt;
     }
 }

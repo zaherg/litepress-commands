@@ -1,16 +1,16 @@
 <?php
 
-namespace Composer\Litepress;
+namespace Composer\Litepress\Commands;
 
+use Composer\Litepress\Utils;
 use Composer\Script\Event;
 use Composer\Util\Filesystem;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class HandleCleanupCommand extends Command
+class Cleanup extends Command
 {
-
     protected Event $event;
     protected Filesystem $fs;
 
@@ -18,7 +18,7 @@ class HandleCleanupCommand extends Command
     {
         parent::__construct('project:cleanup');
         $this->event = $event;
-        $this->fs = new Filesystem;
+        $this->fs = new Filesystem();
     }
 
     protected function configure(): void
@@ -28,7 +28,7 @@ class HandleCleanupCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        if(is_dir(Utils::getBaseDir($this->event).'/public/wp/wp-content')) {
+        if (is_dir(Utils::getBaseDir($this->event).'/public/wp/wp-content')) {
             $this->fs->removeDirectory(Utils::getBaseDir($this->event).'/public/wp/wp-content');
         }
 

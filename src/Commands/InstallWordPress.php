@@ -1,14 +1,15 @@
 <?php
 
-namespace Composer\Litepress;
+namespace Composer\Litepress\Commands;
 
+use Composer\Litepress\Utils;
 use Composer\Script\Event;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 
-class HandleWordPressInstallationCommand extends Command
+class InstallWordPress extends Command
 {
     protected Event $event;
 
@@ -39,17 +40,17 @@ class HandleWordPressInstallationCommand extends Command
            'ADMIN_PASSWORD' => $adminPassword,
            'ADMIN_EMAIL' => $adminEmail,
            'WP_HOME' => $siteUrl,
-           'SITE_TITLE' => $siteTitle
+           'SITE_TITLE' => $siteTitle,
         ];
 
-        $missingVars = array_filter($requiredVars, fn($value) => empty($value));
+        $missingVars = array_filter($requiredVars, fn ($value) => empty($value));
 
-        if (!empty($missingVars)) {
-           $output->writeln('<fg=red>Missing required environment variables: </>');
-           foreach (array_keys($missingVars) as $var) {
-               $output->writeln("<fg=red>- {$var}</>");
-           }
-           exit(1);
+        if (! empty($missingVars)) {
+            $output->writeln('<fg=red>Missing required environment variables: </>');
+            foreach (array_keys($missingVars) as $var) {
+                $output->writeln("<fg=red>- {$var}</>");
+            }
+            exit(1);
         }
 
         // Get the bin directory from Composer configuration
@@ -66,7 +67,7 @@ class HandleWordPressInstallationCommand extends Command
             '--admin_email=' . $adminEmail,
             '--url=' . $siteUrl,
             '--title=' . $siteTitle,
-            '--skip-email'
+            '--skip-email',
         ]);
 
         try {
@@ -84,7 +85,7 @@ class HandleWordPressInstallationCommand extends Command
                 }
             });
 
-            if (!$process->isSuccessful()) {
+            if (! $process->isSuccessful()) {
                 throw new \RuntimeException('WordPress installation failed');
             }
 
@@ -99,7 +100,7 @@ class HandleWordPressInstallationCommand extends Command
 
     private function removePasswordFromEnv(OutputInterface $output): void
     {
-        if (!file_exists('.env')) {
+        if (! file_exists('.env')) {
             return;
         }
 
@@ -109,6 +110,7 @@ class HandleWordPressInstallationCommand extends Command
 
         if (file_put_contents('.env', $envContent) === false) {
             $output->writeln('<e>Failed to update .env file to remove password</e>');
+
             return;
         }
 

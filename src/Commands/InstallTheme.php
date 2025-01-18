@@ -1,6 +1,6 @@
 <?php
 
-namespace Composer\Litepress;
+namespace Composer\Litepress\Commands;
 
 use Composer\Script\Event;
 use Symfony\Component\Console\Command\Command;
@@ -8,7 +8,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 
-class HandleThemeInstallationCommand extends Command
+class InstallTheme extends Command
 {
     protected Event $event;
 
@@ -53,13 +53,13 @@ class HandleThemeInstallationCommand extends Command
                 }
             });
 
-            if (!$process->isSuccessful()) {
+            if (! $process->isSuccessful()) {
                 throw new \RuntimeException('Theme activation failed');
             }
 
             return Command::SUCCESS;
         } catch (\Exception $e) {
-            $output->writeln('<error>' . $e->getMessage() . '</error>');
+            $output->writeln('<e>' . $e->getMessage() . '</e>');
             exit(1);
         }
     }
