@@ -15,6 +15,7 @@ class HandleWordPressInstallationCommand extends Command
     public function __construct(Event $event)
     {
         parent::__construct('project:install');
+        Utils::loadEvn($event);
         $this->event = $event;
     }
 
@@ -25,16 +26,30 @@ class HandleWordPressInstallationCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $adminUser = getenv('ADMIN_USER');
-        $adminPassword = getenv('ADMIN_PASSWORD');
-        $adminEmail = getenv('ADMIN_EMAIL');
-        $siteUrl = getenv('WP_HOME');
-        $siteTitle = getenv('SITE_TITLE');
+        $adminUser = getenv('ADMIN_USER') ?: $_ENV['ADMIN_USER'];
+        $adminPassword = getenv('ADMIN_PASSWORD') ?: $_ENV['ADMIN_PASSWORD'];
+        $adminEmail = getenv('ADMIN_EMAIL') ?: $_ENV['ADMIN_EMAIL'];
+        $siteUrl = getenv('WP_HOME') ?: $_ENV['WP_HOME'];
+        $siteTitle = getenv('SITE_TITLE') ?: $_ENV['SITE_TITLE'];
+
 
         // Validate required environment variables
-        if (!$adminUser || !$adminPassword || !$adminEmail || !$siteUrl || !$siteTitle) {
-            $output->writeln('<e>Missing required environment variables. Please run project:setup first.</e>');
-            return Command::FAILURE;
+        $requiredVars = [
+           'ADMIN_USER' => $adminUser,
+           'ADMIN_PASSWORD' => $adminPassword,
+           'ADMIN_EMAIL' => $adminEmail,
+           'WP_HOME' => $siteUrl,
+           'SITE_TITLE' => $siteTitle
+        ];
+
+        $missingVars = array_filter($requiredVars, fn($value) => empty($value));
+
+        if (!empty($missingVars)) {
+           $output->writeln('<fg=red>Missing required environment variables: </>');
+           foreach (array_keys($missingVars) as $var) {
+               $output->writeln("<fg=red>- {$var}</>");
+           }
+           exit(1);
         }
 
         // Get the bin directory from Composer configuration
@@ -78,7 +93,7 @@ class HandleWordPressInstallationCommand extends Command
             return Command::SUCCESS;
         } catch (\Exception $e) {
             $output->writeln('<e>' . $e->getMessage() . '</e>');
-            return Command::FAILURE;
+            exit(1);
         }
     }
 

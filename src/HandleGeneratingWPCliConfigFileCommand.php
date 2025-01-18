@@ -2,6 +2,7 @@
 
 namespace Composer\Litepress;
 
+use Composer\Script\Event;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -30,9 +31,13 @@ class HandleGeneratingWPCliConfigFileCommand extends Command
         ]
     ];
 
-    public function __construct()
+    protected Event $event;
+
+    public function __construct(Event $event)
     {
         parent::__construct('project:wpcli');
+        $this->event = $event;
+        Utils::loadEvn($event);
     }
 
     protected function configure(): void
@@ -43,6 +48,8 @@ class HandleGeneratingWPCliConfigFileCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
+            $this->config['url'] = str_replace('${WP_HOME}', getenv('WP_HOME'), $this->config['url']);
+
             // Generate YAML content
             $yaml = Yaml::dump($this->config, 4, 2);
 
@@ -56,7 +63,7 @@ class HandleGeneratingWPCliConfigFileCommand extends Command
 
         } catch (\Exception $e) {
             $output->writeln('<e>' . $e->getMessage() . '</e>');
-            return Command::FAILURE;
+            exit(1);
         }
     }
 }

@@ -14,7 +14,7 @@ class ScriptHandler
     private static function getApplication(): Application
     {
         if (self::$app === null) {
-            self::$app = new Application();
+            self::$app = new Application('Litepress');
             self::$app->setAutoExit(false);
         }
 
@@ -36,7 +36,7 @@ class ScriptHandler
     {
         try {
             $app = self::getApplication();
-            $app->add(new HandleCleanupCommand);
+            $app->add(new HandleCleanupCommand($event));
             $app->run(new ArrayInput(['command' => 'project:cleanup']), new ConsoleOutput());
         } catch (\Exception $e) {
             $event->getIO()->writeError($e->getMessage());
@@ -47,7 +47,7 @@ class ScriptHandler
     {
         try {
             $app = self::getApplication();
-            $app->add(new HandleDatabaseCommand);
+            $app->add(new HandleDatabaseCommand($event));
             $app->run(new ArrayInput(['command' => 'project:database']), new ConsoleOutput());
         } catch (\Exception $e) {
             $event->getIO()->writeError($e->getMessage());
@@ -80,19 +80,8 @@ class ScriptHandler
     {
         try {
             $app = self::getApplication();
-            $app->add(new HandleGeneratingWPCliConfigFileCommand);
+            $app->add(new HandleGeneratingWPCliConfigFileCommand($event));
             $app->run(new ArrayInput(['command' => 'project:wpcli']), new ConsoleOutput());
-        } catch (\Exception $e) {
-            $event->getIO()->writeError($e->getMessage());
-        }
-    }
-
-    public static function handleGeneratingInstallScript(Event $event): void
-    {
-        try {
-            $app = self::getApplication();
-            $app->add(new HandleGeneratingInstallScriptCommand);
-            $app->run(new ArrayInput(['command' => 'project:install-script']), new ConsoleOutput());
         } catch (\Exception $e) {
             $event->getIO()->writeError($e->getMessage());
         }
@@ -106,7 +95,6 @@ class ScriptHandler
             self::handleWordPressInstallation($event);
             self::handleThemeInstallation($event);
             self::handleGeneratingWPCliConfigFile($event);
-            self::handleGeneratingInstallScript($event);
         } catch (\Exception $e) {
             $event->getIO()->writeError($e->getMessage());
             throw $e;

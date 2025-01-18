@@ -2,6 +2,7 @@
 
 namespace Composer\Litepress;
 
+use Composer\Util\Filesystem;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -10,7 +11,7 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 class HandleCreateProjectCommand extends Command
 {
-    private array $requiredInfo = [
+    protected array $requiredInfo = [
         'site-url' => [
             'env' => 'WP_HOME',
             'question' => 'What is your site URL?',
@@ -38,9 +39,12 @@ class HandleCreateProjectCommand extends Command
         ]
     ];
 
+    protected Filesystem $fs;
+
     public function __construct()
     {
         parent::__construct('project:setup');
+        $this->fs = new Filesystem;
     }
 
     protected function configure(): void
@@ -55,7 +59,6 @@ class HandleCreateProjectCommand extends Command
 
         do {
             $output->writeln('<info>Setting up WordPress project...</info>');
-            $output->writeln('');
 
             foreach ($this->requiredInfo as $key => $info) {
                 // Check environment variable first
@@ -68,8 +71,7 @@ class HandleCreateProjectCommand extends Command
                     );
 
                     if ($key === 'admin-password') {
-                        $question->setHidden(true)
-                                ->setHiddenFallback(false);
+                        $question->setHidden(true)->setHiddenFallback(false);
                     }
 
                     $value = $helper->ask($input, $output, $question);

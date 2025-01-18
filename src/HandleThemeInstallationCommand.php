@@ -60,7 +60,7 @@ class HandleThemeInstallationCommand extends Command
             return Command::SUCCESS;
         } catch (\Exception $e) {
             $output->writeln('<error>' . $e->getMessage() . '</error>');
-            return Command::FAILURE;
+            exit(1);
         }
     }
 }
