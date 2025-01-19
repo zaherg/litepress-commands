@@ -49,7 +49,7 @@ class GenerateWPCliConfig extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
-            $this->config['url'] = str_replace('${WP_HOME}', getenv('WP_HOME'), $this->config['url']);
+            $this->config['url'] = str_replace('${WP_HOME}', getenv('WP_HOME') ?: $_ENV['WP_HOME'], $this->config['url']);
 
             // Generate YAML content
             $yaml = Yaml::dump($this->config, 4, 2);
