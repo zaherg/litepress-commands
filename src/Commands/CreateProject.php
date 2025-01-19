@@ -66,7 +66,7 @@ class CreateProject extends Command
 
                 if (! $value) {
                     $question = new Question(
-                        sprintf('<question>%s</question> [<comment>%s</comment>]: ', $info['question'], $info['default']),
+                        sprintf('<question fg=red>%s</question> [<comment>%s</comment>]: ', $info['question'], $info['default']),
                         $info['default']
                     );
 
@@ -103,7 +103,7 @@ class CreateProject extends Command
                 );
 
                 if (! $helper->ask($input, $output, $retryQuestion)) {
-                    $output->writeln('<e>Setup cancelled by user. Terminating installation.</e>');
+                    $output->writeln('<fg=red>Setup cancelled by user. Terminating installation.</>');
                     exit(1); // Terminate the entire process
                 }
 
